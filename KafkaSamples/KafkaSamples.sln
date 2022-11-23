@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Producer", "Producer\Produc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Consumer", "Consumer\Consumer.csproj", "{B9454015-A63D-4216-B952-570AFE27D61E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BasicSamples", "BasicSamples", "{B15BF3E8-A3AD-4262-A7F9-66686CA41FAE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1BCB7702-C8FC-431C-AE71-AD2B6D16E8BE} = {B15BF3E8-A3AD-4262-A7F9-66686CA41FAE}
+		{B9454015-A63D-4216-B952-570AFE27D61E} = {B15BF3E8-A3AD-4262-A7F9-66686CA41FAE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9564F9A5-031C-4FB1-BA4E-EEF3496A1631}
