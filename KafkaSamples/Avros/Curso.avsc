@@ -1,0 +1,9 @@
+{
+	"namespace": "Schemas",
+	"type": "record",
+	"name": "Curso",
+	"fields": [
+		{ "name": "Id", "type": "string" },
+		{ "name": "Descricao", "type": "string" }
+	]
+}
