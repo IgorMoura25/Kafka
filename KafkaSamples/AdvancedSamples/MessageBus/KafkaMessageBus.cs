@@ -45,6 +45,8 @@ namespace MessageBus
                 {
                     GroupId = "test-group",
                     BootstrapServers = _bootstrapServers,
+                    AutoOffsetReset = AutoOffsetReset.Latest, // Consuma somente as mensagens a partir do momento do Consume
+                    //AutoOffsetReset = AutoOffsetReset.Earliest, // Consuma todas as mensagens represadas que estão no tópico
                     EnableAutoCommit = false, // false == A aplicação que se encarregará de dizer que "LEU" a mensagem do kafka
                     EnablePartitionEof = true // true == O kafka avisa através da "" se a partição chegou ao fim
                 };
