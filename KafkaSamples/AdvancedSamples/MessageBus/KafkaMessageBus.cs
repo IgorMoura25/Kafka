@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using RC.MessageBus.Kafka;
+using System.Text;
 using System.Text.Json;
 
 namespace MessageBus
@@ -46,10 +47,16 @@ namespace MessageBus
             // Aborto se deu algo errado
             //producer.AbortTransaction();
 
+            var headers = new Headers();
+            headers.Add("application", Encoding.UTF8.GetBytes("payment")); // Dizendo que a aplicação que gerou o evento foi a de Payment
+            // inserir outros headers se necessário...
+
+
             var result = await producer.ProduceAsync(topic, new Message<string, T>
             {
                 Key = Guid.NewGuid().ToString(),
-                Value = message
+                Value = message,
+                Headers = headers
             });
 
             // Commito se deu tudo certo
@@ -97,6 +104,10 @@ namespace MessageBus
                     // Utilizar se caso necessitar reprocessar a mensagem
                     // consumer.Seek(result.TopicPartitionOffset);
                     // continue;
+
+                    var headers = result.Message.Headers.ToDictionary(p => p.Key, p => Encoding.UTF8.GetString(p.GetValueBytes()));
+
+                    var applicationName = headers["application"];
 
                     // Executo a função que está aguardando a mensagem como parâmetro
                     await executeAfterConsumed(result.Message.Value);
