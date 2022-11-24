@@ -17,7 +17,10 @@ namespace MessageBus
         {
             var config = new ProducerConfig
             {
-                Acks = Acks.Leader,
+                EnableIdempotence = true,
+                Acks = Acks.All, // Para garantir a idempotência (sem duplicatas)
+                MaxInFlight = 1, // Determina quantidade de conexões com o kafka
+                MessageSendMaxRetries = 2, // Tenta enviar novamente no máximo 2 vezes
                 BootstrapServers = _bootstrapServers
             };
 
@@ -48,7 +51,9 @@ namespace MessageBus
                     AutoOffsetReset = AutoOffsetReset.Latest, // Consuma somente as mensagens a partir do momento do Consume
                     //AutoOffsetReset = AutoOffsetReset.Earliest, // Consuma todas as mensagens represadas que estão no tópico
                     EnableAutoCommit = false, // false == A aplicação que se encarregará de dizer que "LEU" a mensagem do kafka
-                    EnablePartitionEof = true // true == O kafka avisa através da "" se a partição chegou ao fim
+                    EnablePartitionEof = true, // true == O kafka avisa através da "" se a partição chegou ao fim
+                    EnableAutoOffsetStore = false // false == O offset da mensagem lida não será deslocado automaticamente,
+                                                  // cabendo ao consumidor fazer isso manualmente
                 };
 
                 using var consumer = new ConsumerBuilder<string, T>(config)
@@ -68,6 +73,10 @@ namespace MessageBus
                     }
 
                     // Se não, quer dizer que foi consumida uma mensagem de fato, então...
+
+                    // Utilizar se caso necessitar reprocessar a mensagem
+                    // consumer.Seek(result.TopicPartitionOffset);
+                    // continue;
 
                     // Executo a função que está aguardando a mensagem como parâmetro
                     await executeAfterConsumed(result.Message.Value);
