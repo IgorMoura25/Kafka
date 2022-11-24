@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using RC.MessageBus.Kafka;
 using System.Text.Json;
 
 namespace MessageBus
@@ -21,12 +22,14 @@ namespace MessageBus
 
             var payload = JsonSerializer.Serialize(message);
 
-            var producer = new ProducerBuilder<string, string>(config).Build();
+            var producer = new ProducerBuilder<string, T>(config)
+                .SetValueSerializer(new CustomSerializer<T>())
+                .Build();
 
-            var result = await producer.ProduceAsync(topic, new Message<string, string>
+            var result = await producer.ProduceAsync(topic, new Message<string, T>
             {
                 Key = Guid.NewGuid().ToString(),
-                Value = payload
+                Value = message
             });
 
             await Task.CompletedTask;
@@ -45,7 +48,9 @@ namespace MessageBus
                     EnablePartitionEof = true // true == O kafka avisa através da "" se a partição chegou ao fim
                 };
 
-                using var consumer = new ConsumerBuilder<string, string>(config).Build();
+                using var consumer = new ConsumerBuilder<string, T>(config)
+                .SetValueDeserializer(new CustomDeserializer<T>())
+                .Build();
 
                 consumer.Subscribe(topic);
 
@@ -61,11 +66,8 @@ namespace MessageBus
 
                     // Se não, quer dizer que foi consumida uma mensagem de fato, então...
 
-                    // Deserializo a mensagem
-                    var message = JsonSerializer.Deserialize<T>(result.Message.Value);
-
                     // Executo a função que está aguardando a mensagem como parâmetro
-                    await executeAfterConsumed(message);
+                    await executeAfterConsumed(result.Message.Value);
 
                     // Digo ao kafka que a mensagem foi "LIDA"
                     consumer.Commit();
