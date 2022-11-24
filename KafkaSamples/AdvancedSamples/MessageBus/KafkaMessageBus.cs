@@ -17,6 +17,7 @@ namespace MessageBus
         {
             var config = new ProducerConfig
             {
+                Acks = Acks.Leader,
                 BootstrapServers = _bootstrapServers
             };
 
